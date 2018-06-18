@@ -1,0 +1,104 @@
+ALTER PROC [dbo].[Users_FollowersTop5]
+@Id int
+
+AS
+
+/*
+EXEC Users_FollowersTop5
+@ID=14441
+*/
+BEGIN
+
+SELECT 
+	TOP 1
+	COUNT(*) AS Followers, 
+	ReceiverId,
+	AvatarUrl,
+	FirstName,
+	LastName,
+	Name as Type
+FROM 
+	UserConnections
+INNER JOIN
+	Users 
+	ON 
+		UserConnections.ReceiverId = Users.Id
+INNER JOIN
+	UserTypes 
+	ON 
+		UserTypes.Id = Users.UserTypeId
+WHERE
+	ReceiverId in	
+		(SELECT 
+			ReceiverId 
+		 FROM 
+			UserConnections 
+		 WHERE 
+			SenderId = @Id and TypeId = 3)
+GROUP BY 
+	ReceiverId, 
+	AvatarUrl, 
+	FirstName, 
+	LastName, 
+	Name
+ORDER BY 
+	COUNT(*) DESC;
+
+END
+
+ALTER PROC [dbo].[Users_Followers]
+
+@Id int
+
+AS
+
+/*
+
+EXEC Users_Followers
+@Id = 14441
+
+select * from usertypes
+select * from UserConnections
+select * from sports
+select * from users 
+
+*/
+
+BEGIN
+
+SELECT 
+	COUNT(*) AS Followers, 
+	ReceiverId,
+	AvatarUrl,
+	FirstName,
+	LastName,
+	Name as Type
+FROM 
+	UserConnections
+INNER JOIN
+	Users 
+	ON 
+		UserConnections.ReceiverId = Users.Id
+INNER JOIN
+	UserTypes 
+	ON 
+		UserTypes.Id = Users.UserTypeId
+WHERE
+	ReceiverId in	
+		(SELECT 
+			ReceiverId 
+		 FROM 
+			UserConnections 
+		 WHERE 
+			SenderId = @Id and TypeId = 3)
+GROUP BY 
+	ReceiverId, 
+	AvatarUrl, 
+	FirstName, 
+	LastName, 
+	Name
+ORDER BY 
+	LastName;
+
+
+END
